@@ -65,7 +65,7 @@ body {
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px; /* 紧凑间距，留出更多垂直空间给日历 */
 }
 
 /* ==============================================================
@@ -75,7 +75,7 @@ body {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 14px;
-    padding: 12px 16px;
+    padding: 8px 12px; /* 紧凑垂直填充，释放更多空间 */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -202,7 +202,7 @@ body {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 14px;
-    padding: 8px 14px; /* Reduced vertical padding */
+    padding: 6px 12px; /* 进一步压榨垂直留白，保证一屏完整呈现 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -223,17 +223,17 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 2px 0;
+    margin: 0px 0; /* 极致压缩外边距 */
 }
 
 .nav-day-btn {
     background: transparent;
     border: none;
     color: var(--primary-color);
-    font-size: calc(24px * var(--font-scale)); /* Shrunk arrows */
+    font-size: calc(20px * var(--font-scale)); /* 适当精简箭头，留出空间 */
     font-weight: 400; 
-    width: 36px;
-    height: 36px;
+    width: 30px; /* 缩小按键大小 */
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -248,7 +248,7 @@ body {
 
 /* 缩小后的本日数字，让出更多空间 */
 .selected-day-number {
-    font-size: calc(56px * var(--font-scale)); /* Shrunk focus day number */
+    font-size: calc(48px * var(--font-scale)); /* 巨型公历日子精简至 48px，保留辨识度并缩短高度 */
     font-weight: 900; 
     color: var(--primary-color);
     line-height: 1.0;
@@ -273,7 +273,7 @@ body {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 16px;
-    padding: 16px;
+    padding: 10px 12px; /* 压缩卡片内边距，释放垂直物理空间 */
     box-shadow: 0 4px 14px var(--shadow-color);
 }
 
@@ -282,7 +282,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 6px; /* 压缩间距 */
 }
 
 .calendar-month-title {
@@ -340,7 +340,7 @@ body {
 .days-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-auto-rows: minmax(54px, auto);
+    grid-auto-rows: minmax(46px, auto); /* 将默认网格行高从 54px 缩短至 46px，极致保障一屏内呈现 */
     gap: 4px;
 }
 
@@ -421,7 +421,7 @@ body {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 10px 14px;
+    padding: 6px 12px; /* 压缩垂直内边距，保留精致条形感 */
     cursor: pointer;
     box-shadow: 0 4px 10px var(--shadow-color);
     display: flex;
