@@ -560,85 +560,90 @@ body {
    ============================================================== */
 @media(min-width: 680px) {
     body {
-        padding: 30px 24px;
-        align-items: center; /* 垂直居中大屏幕，营造开阔呼吸感 */
+        padding: 16px 20px;
+        align-items: flex-start; /* 顶到头部，消除大量的顶部空白 */
     }
     
     .app-container {
-        width: 97%;
-        max-width: 1020px; /* 拓宽至 1020px，有效缩减两边的白色留白 */
+        width: 98%;
+        max-width: 920px; /* 极佳的平板响应式宽度限制 */
         display: grid;
-        grid-template-columns: 310px 1fr; /* 左栏拓宽至 310px，呈现更加稳重对称的布局 */
-        grid-template-rows: auto auto auto auto 1fr; /* 5行网格支持完美侧边栏堆叠 */
-        gap: 20px; /* 间距轻微增加，营造更呼吸的空间比例 */
+        grid-template-columns: 1fr 1fr; /* 平板上部左右并列：左侧日期焦点卡片，右侧天气卡片 */
+        grid-template-rows: auto auto auto auto; /* 行高自适应 */
+        gap: 14px;
     }
     
     .app-top-bar {
         grid-column: 1 / span 2;
+        grid-row: 1;
     }
     
     .settings-drawer {
         grid-column: 1 / span 2;
+        grid-row: 2;
     }
     
-    /* 左栏：日期大焦点卡片 */
+    /* 上部左栏：日期大焦点卡片 */
     .selected-day-card {
         grid-column: 1;
         grid-row: 3;
-        align-self: start;
+        align-self: stretch; /* 拉伸与右侧天气卡片等高，极其对称 */
         width: 100%;
-        padding: 20px 14px; /* 增大上下内边距，使其大方挺拔 */
-        margin-bottom: 0; /* 依靠 grid 行间隔自动排布 */
+        padding: 16px 14px;
+        margin-bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* 纵向居中对齐内容 */
     }
     
     .selected-solar-full {
         font-size: calc(14px * var(--font-scale));
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
     
     .selected-day-number {
-        font-size: 80px; /* 略微放大巨型日子字号，更加突出 */
+        font-size: 72px; /* 舒适且大方的大字号 */
     }
     
     .selected-lunar-full {
         font-size: calc(14px * var(--font-scale));
-        margin-top: 8px;
+        margin-top: 6px;
     }
     
-    /* 左栏：天气卡片 (完美还原截图垂直两行高档样式) */
+    /* 上部右栏：天气卡片 (并列显示，等高拉伸) */
     .bottom-weather-strip {
-        grid-column: 1;
-        grid-row: 4;
-        align-self: start;
+        grid-column: 2;
+        grid-row: 3;
+        align-self: stretch; /* 与左侧日期焦点卡片等高，完美契合 */
         width: 100%;
-        padding: 16px 18px; /* 增大内边距 */
+        padding: 14px 18px; /* 优雅宽敞内边距 */
         border-radius: 14px;
         margin-top: 0;
         cursor: pointer;
     }
     
     .weather-brief-data {
-        flex-direction: column; /* 堆叠为两行！ */
+        flex-direction: column; /* 纵向堆叠今天与明天，极其精致 */
         align-items: stretch;
         width: 100%;
-        gap: 12px;
+        gap: 10px;
     }
     
     .weather-vertical-divider {
-        display: none; /* 隐藏原有的水平单行分割线 */
+        display: none;
     }
     
     .weather-column {
         display: flex;
-        flex-direction: column; /* 垂直排列：今天标签在上方，详情在下方 */
+        flex-direction: column;
         align-items: flex-start;
         width: 100%;
-        gap: 8px;
+        gap: 6px;
     }
     
     .weather-column.today {
-        border-bottom: 1px solid var(--border-color); /* 行间细线分割 */
-        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-color); /* 行间精美蓝灰细线分割 */
+        padding-bottom: 10px;
     }
     
     /* 今天 / 明天标签 */
@@ -652,27 +657,27 @@ body {
         margin: 0;
     }
     
-    /* 每一个天气的容器体 */
+    /* 气象详情体 */
     .weather-column .weather-body {
         display: flex;
         align-items: center;
-        justify-content: space-between; /* 左右拉开：左端信息，右端湿度 */
+        justify-content: space-between; /* 左右磁力拉开 */
         width: 100%;
         gap: 8px;
     }
     
     /* Emojis */
     .weather-column .weather-emoji-colorful {
-        font-size: 32px; /* 醒目大尺寸，极富色彩感 */
+        font-size: 28px;
         margin-right: 4px;
     }
     
-    /* 中间部分 (温度范围 + 风力胶囊) */
+    /* 中间部分 */
     .weather-column .weather-middle-info {
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        gap: 6px;
+        gap: 4px;
         flex: 1;
     }
     
@@ -696,12 +701,12 @@ body {
     
     /* Pill 胶囊气泡风力标签 */
     .weather-column .weather-wind-scale {
-        display: inline-block !important; /* 强制在平板上显示 */
+        display: inline-block !important;
         color: var(--text-muted);
         background-color: var(--bg-color);
         border: 1px solid var(--border-color);
         padding: 2px 10px;
-        border-radius: 12px; /* 完美的圆润胶囊形态 */
+        border-radius: 12px;
         font-size: calc(10px * var(--font-scale));
         font-weight: 700;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
@@ -709,7 +714,7 @@ body {
     
     /* 右侧湿度栏 */
     .weather-column .weather-extra {
-        display: flex !important; /* 强制显示 */
+        display: flex !important;
         flex-direction: column;
         align-items: flex-end;
         gap: 2px;
@@ -726,27 +731,28 @@ body {
         color: var(--text-main);
     }
     
-    /* 右栏：月历网格部分 */
+    /* 底部单独一卡：月份和完整日历展示卡片 */
     .calendar-grid-section {
-        grid-column: 2;
-        grid-row: 3 / span 3; /* 日历垂直跨越 Row 3, 4, 5 */
-        width: 100%; /* 核心响应式设计：填充 Column 2 的 100% 空间，保证与顶栏右侧绝对对齐 */
-        aspect-ratio: 1 / 1; /* 完美正方形比例，随着宽度自适应拉伸 */
+        grid-column: 1 / span 2; /* 跨越两列，撑满平板底部 */
+        grid-row: 4; /* 置于底层 */
+        width: 100%;
+        max-width: 100%;
+        aspect-ratio: auto; /* 移除原正方形比例，使其横向自由流式拉伸 */
         height: auto;
         display: flex;
         flex-direction: column;
         margin-bottom: 0;
         gap: 12px;
-        padding: 18px 20px; /* 扩大日历内边距，提升呼吸感 */
+        padding: 16px 20px; /* 大气的呼吸内边距 */
     }
     
     .days-grid {
-        flex: 1; /* 充满正方形日历内部 */
-        grid-auto-rows: 1fr; /* 高度等比拉伸 */
-        gap: 8px; /* 日期方格间距 */
+        flex: auto;
+        grid-auto-rows: minmax(56px, auto); /* 增加单元格行高，确保字号大、极易阅读和触控 */
+        gap: 8px; /* 节点间距 */
     }
     
     .day-cell {
-        padding: 6px 2px; /* 极其舒适的方格内边距 */
+        padding: 8px 4px; /* 更利于指尖触控的黄金内边距 */
     }
 }
