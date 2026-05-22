@@ -1,0 +1,752 @@
+/* ==============================================================
+   长辈大字日历网 - 重构简约大字版专属样式表
+   ============================================================== */
+
+/* 全局变量设计：红绿双主题与字号缩放 */
+:root {
+    /* 暖心红主题 */
+    --primary-color: #E53935;       /* 主题朱砂红：符合参考图，明亮醒目 */
+    --primary-hover: #D32F2F;
+    --primary-light: #FFEBEE;       /* 浅粉红：用于抽屉和激活背景 */
+    --bg-color: #F4F5F7;            /* 卡片背景：现代浅灰，衬托出纯白卡片 */
+    --card-bg: #FFFFFF;             /* 纯白卡片背景：高洁净度、高对比 */
+    --text-main: #111111;           /* 核心正文：纯黑，极高可读性 */
+    --text-muted: #666666;          /* 辅助灰 */
+    --text-faded: #B0B0B0;          /* 极浅灰，用于非本月日期 */
+    --border-color: #ECEFF1;        /* 极细分割线颜色 */
+    --shadow-color: rgba(0, 0, 0, 0.03);
+    --selected-glow: rgba(229, 57, 53, 0.15);
+
+
+    /* 字号缩放因子：由 JS 动态控制 */
+    --font-scale: 1.0;
+}
+
+/* 天海蓝主题 (温和清爽马卡龙浅天海蓝) */
+[data-theme="blue"] {
+    --primary-color: #4A90E2;       /* 主题天海蓝：柔软温和的温带天蓝色，极其护眼 */
+    --primary-hover: #357ABD;
+    --primary-light: #EBF3FC;       /* 浅天海蓝：如晨雾般的极浅冰蓝 */
+    --bg-color: #F4F8FC;            /* 爱丽丝浅蓝底色：纯净怡人 */
+    --card-bg: #FFFFFF;
+    --text-main: #2C3E50;           /* 深石板蓝，替代纯黑色，柔和温润且对比度充足 */
+    --text-muted: #5A738E;
+    --text-faded: #A9BCCF;
+    --border-color: #E2ECF7;
+    --shadow-color: rgba(74, 144, 226, 0.03);
+    --selected-glow: rgba(74, 144, 226, 0.15);
+}
+
+/* 基础重置 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    line-height: 1.4;
+    padding: 12px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 全局容器，极佳适配手机和平板 */
+.app-container {
+    width: 100%;
+    max-width: 500px; /* 符合移动端/平板竖屏最佳黄金宽度 */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ==============================================================
+   1. 顶部操作栏 (📍 厦门市  |  日历  |  ⚙️ 设置)
+   ============================================================== */
+.app-top-bar {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.city-selector {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--text-main);
+    font-weight: 700;
+    font-size: calc(16px * var(--font-scale));
+    cursor: pointer;
+}
+
+.dropdown-arrow {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: 2px;
+}
+
+.app-title {
+    font-size: calc(15px * var(--font-scale));
+    font-weight: 500;
+    color: var(--text-main);
+    letter-spacing: 0.5px;
+}
+
+.btn-settings {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: calc(15px * var(--font-scale));
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-settings:active {
+    background-color: var(--border-color);
+}
+
+/* ==============================================================
+   2. 抽屉式设置菜单 (淡化、缩小，折叠展现)
+   ============================================================== */
+.settings-drawer {
+    max-height: 0;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    border: 1px solid transparent;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease, margin-bottom 0.3s ease;
+}
+
+.settings-drawer.open {
+    max-height: 240px; /* 展开高度 */
+    border-color: var(--border-color);
+    margin-bottom: 4px;
+}
+
+.drawer-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+}
+
+.control-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.control-label {
+    font-size: calc(14px * var(--font-scale));
+    font-weight: 700;
+    color: var(--text-muted); /* 缩小淡化：使用中灰色 */
+}
+
+/* 缩小版的设置按钮 */
+.btn-group {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-control {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: calc(13px * var(--font-scale));
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    min-height: 32px;
+    transition: all 0.2s ease;
+}
+
+.btn-control.active {
+    background-color: var(--primary-color);
+    color: #FFFFFF;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 6px var(--selected-glow);
+}
+
+/* ==============================================================
+   3. 今日/选中日期焦点卡片 (带左右天导航)
+   ============================================================== */
+.selected-day-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 8px 14px; /* Reduced vertical padding */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 10px var(--shadow-color);
+}
+
+.selected-solar-full {
+    font-size: calc(15px * var(--font-scale));
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: 0.5px;
+    margin-bottom: 0px;
+}
+
+/* 左右切天导航行 */
+.day-navigation-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 2px 0;
+}
+
+.nav-day-btn {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-size: calc(24px * var(--font-scale)); /* Shrunk arrows */
+    font-weight: 400; 
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.nav-day-btn:active {
+    background-color: var(--primary-light);
+}
+
+/* 缩小后的本日数字，让出更多空间 */
+.selected-day-number {
+    font-size: calc(56px * var(--font-scale)); /* Shrunk focus day number */
+    font-weight: 900; 
+    color: var(--primary-color);
+    line-height: 1.0;
+    letter-spacing: -1px;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.01);
+}
+
+.selected-lunar-full {
+    font-size: calc(15px * var(--font-scale));
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-top: 0px;
+    letter-spacing: 0.5px;
+}
+
+
+
+/* ==============================================================
+   4. 月历卡片区 (包含月份导航与日期网格)
+   ============================================================== */
+.calendar-grid-section {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 14px var(--shadow-color);
+}
+
+/* 月度切换栏 */
+.month-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.calendar-month-title {
+    font-size: calc(20px * var(--font-scale));
+    font-weight: 900;
+    color: var(--text-main);
+}
+
+.btn-month-nav {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: calc(24px * var(--font-scale));
+    font-weight: 400;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.btn-month-nav:active {
+    background-color: var(--bg-color);
+}
+
+/* 月历表格布局 */
+.calendar-table {
+    width: 100%;
+}
+
+/* 星期头（日、一、二...） */
+.weekday-header-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+}
+
+.weekday-header {
+    font-size: calc(15px * var(--font-scale));
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.weekday-header.sun, .weekday-header.sat {
+    color: var(--primary-color); /* 星期六日呈现主色（红/绿） */
+}
+
+/* 35/42天日期网格：高度紧凑 */
+.days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: minmax(54px, auto);
+    gap: 4px;
+}
+
+/* 每一个单独的日历格子 */
+.day-cell {
+    border-radius: 10px;
+    padding: 4px 1px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background-color: var(--card-bg);
+}
+
+.day-cell:active {
+    transform: scale(0.92);
+}
+
+/* 非本月日期：极端淡化 */
+.day-cell.other-month {
+    opacity: 0.25;
+}
+
+/* 格子内的公历大数字 */
+.cell-solar-num {
+    font-size: calc(18px * var(--font-scale));
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* 周末公历数字红/绿色高亮 */
+.day-cell.weekend:not(.other-month) .cell-solar-num {
+    color: var(--primary-color);
+}
+
+/* 格子内的农历/节气小字 */
+.cell-lunar-name {
+    font-size: calc(11px * var(--font-scale));
+    font-weight: 500;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 96%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* 节日/节气的特殊颜色 */
+.day-cell.has-badge:not(.other-month) .cell-lunar-name {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+/* 今天特殊标记（细圆框） */
+.day-cell.is-today:not(.is-selected) {
+    border: 1.5px solid var(--primary-color);
+}
+
+/* 选中日期的绝对高亮状态（圆圈满色填充，符合设计图） */
+.day-cell.is-selected {
+    background-color: var(--primary-color) !important;
+    box-shadow: 0 4px 8px var(--selected-glow);
+    border-radius: 12px;
+}
+
+.day-cell.is-selected .cell-solar-num,
+.day-cell.is-selected .cell-lunar-name {
+    color: #FFFFFF !important;
+}
+
+/* ==============================================================
+   5. 底部实时天气窄条 (完全还原参考图样式)
+   ============================================================== */
+.bottom-weather-strip {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.weather-brief-layout {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.weather-brief-loading {
+    font-size: calc(14px * var(--font-scale));
+    font-weight: 700;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.weather-brief-data {
+    width: 100%;
+    display: flex;
+    justify-content: space-around; /* Distribute Today and Tomorrow evenly */
+}
+
+.weather-column {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: calc(13px * var(--font-scale));
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.weather-header {
+    color: var(--text-muted);
+    font-size: calc(11px * var(--font-scale));
+    background-color: var(--bg-color);
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+.weather-body {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.weather-middle-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.weather-temp-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.weather-emoji-colorful {
+    font-size: calc(18px * var(--font-scale));
+    line-height: 1;
+    /* Soft glowing drop-shadow for premium colors, making emojis pop slightly */
+    text-shadow: 0 0 5px rgba(255, 193, 7, 0.4), 0 0 10px rgba(255, 152, 0, 0.2);
+    display: inline-block;
+    transform: scale(1.15);
+    margin-right: 1px;
+}
+
+.weather-desc {
+    color: var(--text-main);
+}
+
+.weather-temp-range {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.weather-wind-scale {
+    color: var(--text-muted);
+    font-weight: 500;
+    background-color: var(--bg-color);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: calc(11px * var(--font-scale));
+}
+
+/* 移动端默认折叠隐藏明天风级和湿度额外信息，保持窄栏紧凑度 */
+.weather-extra,
+.weather-column.tomorrow .weather-wind-scale {
+    display: none;
+}
+
+.weather-vertical-divider {
+    width: 1px;
+    height: 18px;
+    background-color: var(--border-color);
+    margin: 0 4px;
+}
+
+
+/* ==============================================================
+   6. 左右手势滑动切天切月过渡动画
+   ============================================================== */
+.swipe-transition {
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.2s ease !important;
+}
+
+.swipe-left-out {
+    transform: translateX(-40px) scale(0.96);
+    opacity: 0;
+}
+
+.swipe-right-out {
+    transform: translateX(40px) scale(0.96);
+    opacity: 0;
+}
+
+.swipe-left-in-prep {
+    transform: translateX(40px) scale(0.96);
+    opacity: 0;
+}
+
+.swipe-right-in-prep {
+    transform: translateX(-40px) scale(0.96);
+    opacity: 0;
+}
+
+/* ==============================================================
+   7. 屏幕尺寸优化 (平板横屏/大屏双栏 Dashboard 适配 - 1:1 完美还原精致仪表盘布局)
+   ============================================================== */
+@media(min-width: 680px) {
+    body {
+        padding: 30px 24px;
+        align-items: center; /* 垂直居中大屏幕，营造开阔呼吸感 */
+    }
+    
+    .app-container {
+        width: 97%;
+        max-width: 1020px; /* 拓宽至 1020px，有效缩减两边的白色留白 */
+        display: grid;
+        grid-template-columns: 310px 1fr; /* 左栏拓宽至 310px，呈现更加稳重对称的布局 */
+        grid-template-rows: auto auto auto auto 1fr; /* 5行网格支持完美侧边栏堆叠 */
+        gap: 20px; /* 间距轻微增加，营造更呼吸的空间比例 */
+    }
+    
+    .app-top-bar {
+        grid-column: 1 / span 2;
+    }
+    
+    .settings-drawer {
+        grid-column: 1 / span 2;
+    }
+    
+    /* 左栏：日期大焦点卡片 */
+    .selected-day-card {
+        grid-column: 1;
+        grid-row: 3;
+        align-self: start;
+        width: 100%;
+        padding: 20px 14px; /* 增大上下内边距，使其大方挺拔 */
+        margin-bottom: 0; /* 依靠 grid 行间隔自动排布 */
+    }
+    
+    .selected-solar-full {
+        font-size: calc(14px * var(--font-scale));
+        margin-bottom: 8px;
+    }
+    
+    .selected-day-number {
+        font-size: 80px; /* 略微放大巨型日子字号，更加突出 */
+    }
+    
+    .selected-lunar-full {
+        font-size: calc(14px * var(--font-scale));
+        margin-top: 8px;
+    }
+    
+    /* 左栏：天气卡片 (完美还原截图垂直两行高档样式) */
+    .bottom-weather-strip {
+        grid-column: 1;
+        grid-row: 4;
+        align-self: start;
+        width: 100%;
+        padding: 16px 18px; /* 增大内边距 */
+        border-radius: 14px;
+        margin-top: 0;
+        cursor: pointer;
+    }
+    
+    .weather-brief-data {
+        flex-direction: column; /* 堆叠为两行！ */
+        align-items: stretch;
+        width: 100%;
+        gap: 12px;
+    }
+    
+    .weather-vertical-divider {
+        display: none; /* 隐藏原有的水平单行分割线 */
+    }
+    
+    .weather-column {
+        display: flex;
+        flex-direction: column; /* 垂直排列：今天标签在上方，详情在下方 */
+        align-items: flex-start;
+        width: 100%;
+        gap: 8px;
+    }
+    
+    .weather-column.today {
+        border-bottom: 1px solid var(--border-color); /* 行间细线分割 */
+        padding-bottom: 12px;
+    }
+    
+    /* 今天 / 明天标签 */
+    .weather-column .weather-header {
+        display: block;
+        font-size: calc(13px * var(--font-scale));
+        font-weight: 700;
+        color: var(--text-main);
+        background: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    /* 每一个天气的容器体 */
+    .weather-column .weather-body {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* 左右拉开：左端信息，右端湿度 */
+        width: 100%;
+        gap: 8px;
+    }
+    
+    /* Emojis */
+    .weather-column .weather-emoji-colorful {
+        font-size: 32px; /* 醒目大尺寸，极富色彩感 */
+        margin-right: 4px;
+    }
+    
+    /* 中间部分 (温度范围 + 风力胶囊) */
+    .weather-column .weather-middle-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        flex: 1;
+    }
+    
+    .weather-column .weather-temp-row {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+    }
+    
+    .weather-column .weather-desc {
+        font-size: calc(13px * var(--font-scale));
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    
+    .weather-column .weather-temp-range {
+        font-size: calc(12px * var(--font-scale));
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+    
+    /* Pill 胶囊气泡风力标签 */
+    .weather-column .weather-wind-scale {
+        display: inline-block !important; /* 强制在平板上显示 */
+        color: var(--text-muted);
+        background-color: var(--bg-color);
+        border: 1px solid var(--border-color);
+        padding: 2px 10px;
+        border-radius: 12px; /* 完美的圆润胶囊形态 */
+        font-size: calc(10px * var(--font-scale));
+        font-weight: 700;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.01);
+    }
+    
+    /* 右侧湿度栏 */
+    .weather-column .weather-extra {
+        display: flex !important; /* 强制显示 */
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+    }
+    
+    .weather-column .weather-extra-label {
+        font-size: calc(11px * var(--font-scale));
+        color: var(--text-muted);
+    }
+    
+    .weather-column .weather-extra-val {
+        font-size: calc(13px * var(--font-scale));
+        font-weight: 700;
+        color: var(--text-main);
+    }
+    
+    /* 右栏：月历网格部分 */
+    .calendar-grid-section {
+        grid-column: 2;
+        grid-row: 3 / span 3; /* 日历垂直跨越 Row 3, 4, 5 */
+        width: 100%; /* 核心响应式设计：填充 Column 2 的 100% 空间，保证与顶栏右侧绝对对齐 */
+        aspect-ratio: 1 / 1; /* 完美正方形比例，随着宽度自适应拉伸 */
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 0;
+        gap: 12px;
+        padding: 18px 20px; /* 扩大日历内边距，提升呼吸感 */
+    }
+    
+    .days-grid {
+        flex: 1; /* 充满正方形日历内部 */
+        grid-auto-rows: 1fr; /* 高度等比拉伸 */
+        gap: 8px; /* 日期方格间距 */
+    }
+    
+    .day-cell {
+        padding: 6px 2px; /* 极其舒适的方格内边距 */
+    }
+}

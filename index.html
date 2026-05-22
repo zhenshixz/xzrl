@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>小智暖心日历</title>
+    <meta name="description" content="专为长辈设计的极简大字版日历，包含新历、旧历、节日、二十四节气和厦门实时天气。">
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="red" class="size-large">
+    <div class="app-container">
+        <!-- TOP NAVIGATION BAR -->
+        <header class="app-top-bar">
+            <div class="city-selector">
+                <span class="location-pin">📍</span>
+                <span class="city-name">厦门市</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+            <h1 class="app-title">小智暖心日历</h1>
+            <button class="btn-settings" id="btn-settings" onclick="toggleSettings()" aria-label="打开设置菜单">
+                <span class="settings-icon">⚙️</span> 设置
+            </button>
+        </header>
+
+        <!-- SUBTLE SETTINGS DRAWER (Faded and compact, hidden by default) -->
+        <section class="settings-drawer" id="settings-drawer">
+            <div class="drawer-content">
+                <div class="control-row">
+                    <span class="control-label">配色方案：</span>
+                    <div class="btn-group">
+                        <button id="theme-red" class="btn-control active" onclick="setTheme('red')">暖心红</button>
+                        <button id="theme-blue" class="btn-control" onclick="setTheme('blue')">天海蓝</button>
+                    </div>
+                </div>
+                
+                <div class="control-row">
+                    <span class="control-label">界面字号：</span>
+                    <div class="btn-group">
+                        <button id="size-btn-m" class="btn-control" onclick="setFontScale(1.0, 'm')">标准</button>
+                        <button id="size-btn-l" class="btn-control active" onclick="setFontScale(1.2, 'l')">大字</button>
+                        <button id="size-btn-xl" class="btn-control" onclick="setFontScale(1.4, 'xl')">特大</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TOP CARD: SELECTED DAY DETAILS (With left/right navigation arrows) -->
+        <main class="selected-day-card">
+            <div class="selected-solar-full" id="display-solar-full">2026年5月22日 星期五</div>
+            
+            <div class="day-navigation-wrapper">
+                <!-- Previous Day Arrow -->
+                <button class="nav-day-btn prev" onclick="changeSelectedDay(-1)" aria-label="前一天">
+                    <span class="arrow-symbol">&lt;</span>
+                </button>
+                
+                <!-- Huge Focus Day Number -->
+                <div class="selected-day-number" id="display-day-number">22</div>
+                
+                <!-- Next Day Arrow -->
+                <button class="nav-day-btn next" onclick="changeSelectedDay(1)" aria-label="后一天">
+                    <span class="arrow-symbol">&gt;</span>
+                </button>
+            </div>
+            
+            <div class="selected-lunar-full" id="display-lunar-full">丙午年 四月初六</div>
+            
+
+        </main>
+
+        <!-- MONTH CALENDAR VIEW -->
+        <section class="calendar-grid-section">
+            <!-- Month Selection Header -->
+            <div class="month-nav-header">
+                <button class="btn-month-nav" onclick="changeMonth(-1)" aria-label="上个月">
+                    <span class="arrow-symbol">&lt;</span>
+                </button>
+                <h2 class="calendar-month-title" id="calendar-month-title">2026年5月</h2>
+                <button class="btn-month-nav" onclick="changeMonth(1)" aria-label="下个月">
+                    <span class="arrow-symbol">&gt;</span>
+                </button>
+            </div>
+            
+            <div class="calendar-table">
+                <!-- Weekday Headers -->
+                <div class="weekday-header-row">
+                    <div class="weekday-header sun">日</div>
+                    <div class="weekday-header">一</div>
+                    <div class="weekday-header">二</div>
+                    <div class="weekday-header">三</div>
+                    <div class="weekday-header">四</div>
+                    <div class="weekday-header">五</div>
+                    <div class="weekday-header sat">六</div>
+                </div>
+                
+                <!-- Days Grid -->
+                <div class="days-grid" id="days-grid-container">
+                    <!-- Dynamic cells rendered by script.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- BOTTOM WEATHER STRIP (100% Real Live weather matching reference design) -->
+        <footer class="bottom-weather-strip" onclick="fetchXiamenWeather()" title="点击刷新天气">
+            <div class="weather-brief-layout" id="weather-brief-layout">
+                <!-- Loading State -->
+                <div class="weather-brief-loading" id="weather-brief-loading">
+                    <span class="loading-icon">🔄</span> 天气获取中...
+                </div>
+                
+                <!-- Real Weather Content -->
+                <div class="weather-brief-data" id="weather-brief-data" style="display: none;">
+                    <!-- Today Column -->
+                    <div class="weather-column today">
+                        <div class="weather-header">今天</div>
+                        <div class="weather-body">
+                            <span class="weather-emoji-colorful" id="weather-today-emoji">🌦️</span>
+                            <div class="weather-middle-info">
+                                <div class="weather-temp-row">
+                                    <span class="weather-desc" id="weather-today-desc">--</span>
+                                    <span class="weather-temp-range" id="weather-today-range">-- ~ --°C</span>
+                                </div>
+                                <span class="weather-wind-scale" id="weather-today-wind">微风</span>
+                            </div>
+                            <div class="weather-extra">
+                                <span class="weather-extra-label">湿度</span>
+                                <span class="weather-extra-val" id="weather-today-humidity">60%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-vertical-divider"></div>
+                    
+                    <!-- Tomorrow Column -->
+                    <div class="weather-column tomorrow">
+                        <div class="weather-header">明天</div>
+                        <div class="weather-body">
+                            <span class="weather-emoji-colorful" id="weather-tomorrow-emoji">🌤️</span>
+                            <div class="weather-middle-info">
+                                <div class="weather-temp-row">
+                                    <span class="weather-desc" id="weather-tomorrow-desc">--</span>
+                                    <span class="weather-temp-range" id="weather-tomorrow-range">-- ~ --°C</span>
+                                </div>
+                                <span class="weather-wind-scale" id="weather-tomorrow-wind">微风 3级</span>
+                            </div>
+                            <div class="weather-extra">
+                                <span class="weather-extra-label">湿度</span>
+                                <span class="weather-extra-val" id="weather-tomorrow-humidity">75%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- MAIN JAVASCRIPT -->
+    <script src="script.js"></script>
+</body>
+</html>
